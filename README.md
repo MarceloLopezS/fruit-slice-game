@@ -1,0 +1,1 @@
+This is a lite Fruit Slice Game developed with HTML, CSS and Vanilla JavaScript.

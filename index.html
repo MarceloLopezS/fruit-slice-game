@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta 
+        name="description" 
+        content="This is a lite Fruit Slice game to test your reflexes. Get the highest score and show off to your friends."
+    >
+    <link rel="icon" href="./favicon.ico">
+    <link rel="stylesheet" type="text/css" href="./style.css">
+    <script type="text/javascript" src="./main.js" defer></script>
+    <title>Fruit Slice</title>
+</head>
+<body>
+    <header>
+        <h1><span>Fruit</span> Slice <span>Lite</span></h1>
+    </header>
+    <main>
+        <section class="left-ui">
+            <div class="left-ui__box">
+                <p>Score: <span data-score>0</span></p>
+            </div>
+            <div class="left-ui__box">
+                <img class="left-ui__heart" data-heart-id="1">
+                <img class="left-ui__heart" data-heart-id="2">
+                <img class="left-ui__heart" data-heart-id="3">
+            </div>
+        </section>
+        <section class="main-board">
+            <div class="main-board__message"></div>
+            <img class="main-board__fruit">
+        </section>
+        <section class="right-ui">
+            <button class="right-ui__button" data-start>Start</button>
+            <button class="right-ui__button" data-stop>Stop</button>
+        </section>
+        <audio data-slice-sound>
+            <source src="./assets/audio/slice.mp3"></source>
+            <source src="./assets/audio/slice.ogg"></source>
+        </audio>
+    </main>
+    <footer>
+        
+    </footer>
+</body>
+</html>
