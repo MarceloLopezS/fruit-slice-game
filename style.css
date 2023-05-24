@@ -11,6 +11,7 @@
     --clr-highlight-400: hsl(8, 96%, 46%);
 
     --clr-button-400: hsl(257, 14%, 19%);
+    --clr-button-500: hsl(257, 14%, 15%);
 
     --clr-table-100: hsl(165, 13%, 84%);
     --clr-table-200: hsl(165, 7%, 79%);
@@ -53,10 +54,12 @@
     --fs-75: 0.75rem;
     --fs-100: 1rem;
     --fs-110: 1.1rem;
+    --fs-125: 1.25rem;
+    --fs-175: 1.75rem;
     --fs-200: 2rem;
     --fs-300: 3rem;
 
-    --fs-title: clamp(var(--fs-200), 1.5vw, var(--fs-300));
+    --fs-title: clamp(var(--fs-175), 1.75vw, var(--fs-200));
     --fs-body: clamp(var(--fs-100), 1.1vw, var(--fs-110));
     --fs-footer: clamp(var(--fs-75), 1vw, var(--fs-100));
 
@@ -66,10 +69,15 @@
     --size-50: 0.5rem;
     --size-75: 0.75rem;
     --size-100: 1rem;
+    --size-115: 1.15rem;
     --size-125: 1.25rem;
     --size-150: 1.5rem;
     --size-200: 2rem;
-    --size-900: 35rem;
+    --size-250: 2.5rem;
+    --size-275: 2.75rem;
+    --size-500: 5rem;
+    --size-800: 32rem;
+    --size-900: 40rem;
 }
 
 /* CSS Reset */
@@ -138,6 +146,7 @@ body {
     display: flex;
     flex-direction: column;
     font-family: var(--ff-primary);
+    font-size: var(--fs-body);
     color: var(--clr-primary-400);
     background: var(--gradient-table);
     cursor: default;
@@ -145,7 +154,7 @@ body {
 
 header {
     background: var(--gradient-wood);
-    padding: var(--size-200);
+    padding: clamp(var(--size-100), 1.25vw, var(--size-200));
     box-shadow: 0 4px 4px var(--clr-shadow);
 }
 
@@ -174,7 +183,7 @@ main {
 
 .main-section {
     --max-width: 90rem;
-    --gap-inline: 1rem;
+    --gap-inline: var(--size-100);
 
     display: grid;
     grid-template-areas: 
@@ -182,6 +191,7 @@ main {
         'left-ui right-ui'
     ;
     width: min(var(--max-width), 100% - var(--gap-inline));
+    font-weight: var(--fw-bold);
     background: var(--gradient-wood);
     border-radius: var(--size-50);
     box-shadow: 4px 4px 4px var(--clr-shadow);
@@ -190,19 +200,19 @@ main {
 .main-section .left-ui, .main-section .right-ui {
     display: grid;
     place-content: center;
-    gap: var(--size-50);
     padding: var(--size-75);
 }
 
 .main-section .left-ui {
     grid-area: left-ui;
+    gap: var(--size-100);
     border-inline-end: 2px groove var(--clr-shadow);
 }
 
 .left-ui__box {
     display: flex;
-    gap: var(--size-15);
     justify-content: center;
+    gap: var(--size-15);
 }
 
 .left-ui__box span[data-score] {
@@ -210,24 +220,38 @@ main {
 }
 
 .left-ui__heart {
-    max-width: clamp(var(--size-100), 1.2vw, var(--size-200));
+    max-width: clamp(var(--size-115), 1.2vw, var(--size-200));
 }
 
 .main-section .main-board {
     grid-area: main-board;
-    min-height: var(--size-900);
+    min-height: clamp(var(--size-800), 35vw, var(--size-900));
     border-block-end: 2px groove var(--clr-shadow);
 }
 
 .main-section .right-ui {
     grid-area: right-ui;
+    gap: var(--size-50);
 }
 
 .right-ui__button {
+    position: relative;
     color: var(--clr-primary-400);
     background-color: var(--clr-button-400);
     padding: var(--size-25) var(--size-125);
     border-radius: var(--size-50);
+    box-shadow: 2px 2px 2px var(--clr-shadow);
+    cursor: pointer;
+}
+
+.right-ui__button:hover {
+    background-color: var(--clr-button-500);
+}
+
+.right-ui__button:active {
+    top: 2px;
+    left: 2px;
+    box-shadow: none;
 }
 
 footer {
@@ -262,4 +286,50 @@ footer a:hover {
     justify-content: center;
     align-items: center;
     gap: 0.25em;
+}
+
+@media (min-width: 75rem) {
+    .main-section {
+        --side-sections-padding: var(--size-150);
+        --gap-inline: var(--size-500);
+
+        grid-template-columns: 17% 66% 17%;
+        grid-template-areas: 
+            'left-ui main-board right-ui'
+        ;
+        align-items: start;
+    }
+    
+    .main-section .left-ui, .main-section .right-ui {
+        padding-block-start: var(--side-sections-padding);
+    }
+
+    .main-section .left-ui {
+        border-inline-end: none;
+    }
+    
+    .left-ui__box {
+        gap: var(--size-25);
+    }
+    
+    .main-section .main-board {
+        grid-area: main-board;
+        border-block: none;
+        border-inline: 2px groove var(--clr-shadow);
+    }
+
+    .main-section .right-ui {
+        gap: var(--size-75);
+    }
+    
+    .right-ui__button {
+        padding-block: clamp(var(--size-25), 0.25vw, var(--size-50));
+        padding-inline: clamp(var(--size-150), 2.25vw, var(--size-275));
+    }
+}
+
+/* UTILITY CLASSES */
+
+.container {
+    max-width: 120rem;
 }
