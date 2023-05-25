@@ -177,11 +177,13 @@ function handleStartOrReset() {
 }
 
 function handleStop() {
-    gameOver();
-    displayGameOverMessage();
-    startMessage.style.visibility = 'visible';
-    startMessage.style.position = 'unset';
-    startButton.textContent = 'Start'
+    if (playing) {
+        gameOver();
+        displayGameOverMessage();
+        startMessage.style.visibility = 'visible';
+        startMessage.style.position = 'unset';
+        startButton.textContent = 'Start'
+    }
 }
 
 function handleFruitHover() {
