@@ -41,37 +41,27 @@ function updateScoreDisplay() {
     scoreDisplay.textContent = `${score}`;
 }
 
-function hideStartMessage() {
-    startMessage.style.visibility = 'hidden';
-    startMessage.style.position = 'absolute'
+function hideMessage(...messageElements) {
+    messageElements.forEach(messageElement => {
+        messageElement.style.visibility = 'hidden';
+        messageElement.style.position = 'absolute'
+    })
 }
 
 function displayGameOverMessage() {
-    hideStartMessage();
-    hideCountdownMessage();
+    hideMessage(startMessage, countDownMessage);
     gameOverMessage.style.visibility = 'visible';
     gameOverMessage.style.position = 'unset';
     mainBoardMessage.style.visibility = 'visible';
     gameOverScore.textContent = `${score}`
 }
 
-function hideGameOverMessage() {
-    gameOverMessage.style.visibility = 'hidden';
-    gameOverMessage.style.position = 'absolute'
-}
-
 function displayCountdownMessage(count) {
-    hideStartMessage();
-    hideGameOverMessage();
+    hideMessage(startMessage, gameOverMessage);
     countDownMessage.style.visibility = 'visible';
     countDownMessage.style.position = 'unset';
     mainBoardMessage.style.visibility = 'visible';
     countDownMessage.textContent = `${count}`
-}
-
-function hideCountdownMessage() {
-    countDownMessage.style.visibility = 'hidden';
-    countDownMessage.style.position = 'absolute'
 }
 
 function initGame() {
@@ -160,7 +150,7 @@ function gameStartCountDown() {
             clearInterval(countDown);
             playing = true;
             startButton.textContent = 'Reset';
-            hideCountdownMessage();
+            hideMessage(countDownMessage);
             dropFruit()
         }
     }, 1000)
