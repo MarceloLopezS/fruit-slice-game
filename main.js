@@ -158,6 +158,7 @@ function gameStartCountDown() {
         displayCountdownMessage(count);
         if (count < 1) {
             clearInterval(countDown);
+            playing = true;
             startButton.textContent = 'Reset';
             hideCountdownMessage();
             dropFruit()
@@ -171,7 +172,6 @@ function handleStartOrReset() {
         gameOver();
         gameStartCountDown()
     } else {
-        playing = true;
         mainBoardMessage.style.visibility = 'hidden';
         gameStartCountDown()
     }
