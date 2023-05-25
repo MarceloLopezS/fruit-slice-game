@@ -237,6 +237,7 @@ main {
     min-height: clamp(var(--size-800), 35vw, var(--size-900));
     border-block-end: 2px groove var(--clr-shadow);
     overflow: hidden;
+    touch-action: none;
 }
 
 .main-board__message {

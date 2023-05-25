@@ -116,7 +116,7 @@ function setStep() {
 
 function moveFruitY() {
     fruitImg.style.top = `${fruitImg.offsetTop + step}px`;
-    fruitImg.addEventListener('mouseleave', handleFruitHover);
+    fruitImg.addEventListener('pointerleave', handleFruitHover);
 }
 
 function handleFruitPass() {
@@ -143,6 +143,7 @@ function dropFruit() {
 }
 
 function gameOver() {
+    playing = false;
     fruitImg.style.visibility = 'hidden';
     clearInterval(coreInterval);
     clearInterval(countDown);
@@ -196,5 +197,5 @@ function handleFruitHover() {
     delayedAppear = setTimeout(() => {
         dropFruit()
     }, 1000);
-    fruitImg.removeEventListener('mouseleave', handleFruitHover)
+    fruitImg.removeEventListener('pointerleave', handleFruitHover)
 }
