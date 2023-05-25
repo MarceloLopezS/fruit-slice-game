@@ -55,12 +55,17 @@
     --fs-100: 1rem;
     --fs-110: 1.1rem;
     --fs-125: 1.25rem;
+    --fs-150: 1.5rem;
     --fs-175: 1.75rem;
     --fs-200: 2rem;
     --fs-300: 3rem;
+    --fs-400: 4rem;
+    --fs-500: 5rem;
 
     --fs-title: clamp(var(--fs-175), 1.75vw, var(--fs-200));
     --fs-body: clamp(var(--fs-100), 1.1vw, var(--fs-110));
+    --fs-board-message: clamp(var(--fs-150), 1.75vw, var(--fs-200));
+    --fs-board-countdown: clamp(var(--fs-400), 4vw, var(--fs-500));
     --fs-footer: clamp(var(--fs-75), 1vw, var(--fs-100));
 
     --size-15: 0.15rem;
@@ -75,6 +80,8 @@
     --size-200: 2rem;
     --size-250: 2.5rem;
     --size-275: 2.75rem;
+    --size-350: 3.5rem;
+    --size-450: 4.5rem;
     --size-500: 5rem;
     --size-800: 32rem;
     --size-900: 40rem;
@@ -150,6 +157,7 @@ body {
     color: var(--clr-primary-400);
     background: var(--gradient-table);
     cursor: default;
+    user-select: none;
 }
 
 header {
@@ -224,9 +232,41 @@ main {
 }
 
 .main-section .main-board {
+    position: relative;
     grid-area: main-board;
     min-height: clamp(var(--size-800), 35vw, var(--size-900));
     border-block-end: 2px groove var(--clr-shadow);
+    overflow: hidden;
+}
+
+.main-board__message {
+    position: absolute;
+    font-size: var(--fs-board-message);
+    text-align: center;
+    color: var(--clr-neutral-200);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.main-board__message p[data-message-countdown], 
+.main-board__message div[data-message-over] {
+    visibility: hidden;
+    position: absolute;
+}
+
+.main-board__message span[data-score] {
+    color: var(--clr-secondary-400);
+}
+
+.main-board__message p[data-message-countdown] {
+    font-size: var(--fs-board-countdown);
+}
+
+.main-board__fruit {
+    visibility: hidden;
+    position: absolute;
+    max-width: clamp(var(--size-350), 3.8vw, var(--size-450));
 }
 
 .main-section .right-ui {
@@ -332,4 +372,22 @@ footer a:hover {
 
 .container {
     max-width: 120rem;
+}
+
+.sliced {
+    animation: slice 200ms linear;
+}
+
+/* ANIMATIONS */
+
+@keyframes slice {
+    0% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(20deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
 }
