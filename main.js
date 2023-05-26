@@ -78,14 +78,19 @@ function subtractTry() {
 
 function generateFruit() {
     fruitImg.classList.remove('sliced');
+    // Generate random index to access a fruit from the array
     const index = Math.floor(Math.random() * fruitsArray.length);
     const fruitName = fruitsArray[index];
     fruitImg.setAttribute('src', `./assets/img/${fruitName}.webp`);
     fruitImg.style.visibility = 'visible';
+    // Position fruit above main board
     fruitImg.style.top = `-${fruitImg.clientHeight}px`;
-    const fruitWidthPercentaje = fruitImg.clientWidth / mainBoard.clientWidth;
+    // Calculate the Ratio of the fruit width, relative to the main board
+    const fruitWidthRatio = fruitImg.clientWidth / mainBoard.clientWidth;
+    // Calculate a random left coordinate to position the fruit, relative to the main board
     let leftPosition = Math.floor(Math.random() * mainBoard.clientWidth);
-    if (leftPosition > mainBoard.clientWidth * fruitWidthPercentaje) {
+    // Check if fruit would overflow with the generated coordinate. If it's the case, substract the fruit width from the coordinate to prevent it.
+    if (leftPosition > mainBoard.clientWidth * fruitWidthRatio) {
         fruitImg.style.left = `${leftPosition - fruitImg.clientWidth}px`;
     } else {
         fruitImg.style.left = `${leftPosition}px`;
@@ -93,6 +98,7 @@ function generateFruit() {
 }
 
 function setStep() {
+    // Set the step relative to the score to increase game difficulty
     if (score < 16){
         step = 2.5;
     } else if (score < 31){
