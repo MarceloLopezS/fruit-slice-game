@@ -4,7 +4,7 @@ This is a lite Fruit Slice Game (similar to Fruit Ninja) developed with HTML, CS
 
 The app is intended to present a simple, yet intuitive, user interface and experience across desktop and mobile devices. For this, the latest CSS technologies are used in conjunction with the HTML code and the core functionality is handled by JavaScript.
 
-The JavaScript code is the core part that is responsible for the game logic. The aproach is driven towards Functional Programming and it's center on clear, readable code with good practices.
+The JavaScript code is the core part that is responsible for the game logic. The aproach is driven towards Functional Programming and it's center on clean, readable code with good practices.
 
 The JavaScript Code generates an array of hard coded fruits, sets global variables, stores the elements involved in the user interactivity, using class and attribute selectors, and performs the required actions with the following functions:
 - `updateTriesDisplay`: Updates the display of the player’s remaining tries by showing or hiding heart icons.
@@ -25,4 +25,4 @@ The JavaScript Code generates an array of hard coded fruits, sets global variabl
 - `handleStop`: This function handles clicks on the stop button. If a game is currently being played, it stops it and displays a game over message.
 - `handleFruitSlice`: This function handles when a player slices a fruit. It stops all intervals and timeouts, increases the player’s score by one, plays a slice sound, adds a sliced class to fruitImg element, removes pointerleave event listener from fruitImg element and generates a new fruit after 1 second delay.
 
-This code is a mainly a use example of CSS for responsiveness across devices and JavaScript for interactivity by implementing DOM manipulation, Event Listeners, Intervals and Timeouts.
+This code is mainly a use example of CSS for responsiveness across devices and JavaScript for interactivity by implementing DOM manipulation, Event Listeners, Intervals and Timeouts using the latest ECMAScript features such as template strings, arrow functions, etc.
