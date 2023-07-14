@@ -1,10 +1,7 @@
-const fruitsArray = ['apple', 'banana', 'grapes', 'lemon', 'orange', 'peach', 'pear', 'pineapple', 'strawberry', 'watermelon'];
+(function() {
 
-let playing = false,
-    score = 0,
-    tries = 3,
-    fruitMovementRefreshTime = 6,
-    countDown, coreInterval, delayedAppear, step;
+/* DOM Elements */
+
 
 const body = document.querySelector('body');
 const scoreDisplay = body.querySelector('.left-ui__box span[data-score]');
@@ -19,13 +16,33 @@ const sliceAudio = body.querySelector('audio[data-slice-sound]');
 const startButton = body.querySelector('.right-ui__button[data-start]');
 const stopButton = body.querySelector('.right-ui__button[data-stop]');
 
+
+/* CONSTANTS */
+
+
+const fruitsArray = ['apple', 'banana', 'grapes', 'lemon', 'orange', 'peach', 'pear', 'pineapple', 'strawberry', 'watermelon'];
+
+
+/* VARIABLES */
+
+
+let playing = false,
+    score = 0,
+    tries = 3,
+    fruitMovementRefreshTime = 6,
+    countDown, coreInterval, delayedAppear, step;
+
+
 /* MAIN */
+
 
 startButton.addEventListener('click', handleStartOrReset);
 stopButton.addEventListener('click', handleStop);
 
+
 /* FUNCTIONS  */
 
+// Update tries display
 function updateTriesDisplay() {
     const hearts = body.querySelectorAll('.left-ui__heart');
     if (tries === 3) {
@@ -37,10 +54,12 @@ function updateTriesDisplay() {
     }
 }
 
+// Update Score display
 function updateScoreDisplay() {
     scoreDisplay.textContent = `${score}`;
 }
 
+// Hide messages
 function hideMessage(...messageElements) {
     messageElements.forEach(messageElement => {
         messageElement.style.visibility = 'hidden';
@@ -48,6 +67,7 @@ function hideMessage(...messageElements) {
     })
 }
 
+// Display Gameover message
 function displayGameOverMessage() {
     hideMessage(startMessage, countDownMessage);
     gameOverMessage.style.visibility = 'visible';
@@ -56,6 +76,7 @@ function displayGameOverMessage() {
     gameOverScore.textContent = `${score}`
 }
 
+// Display Countdown message
 function displayCountdownMessage(count) {
     hideMessage(startMessage, gameOverMessage);
     countDownMessage.style.visibility = 'visible';
@@ -64,6 +85,7 @@ function displayCountdownMessage(count) {
     countDownMessage.textContent = `${count}`
 }
 
+// Initialize game
 function initGame() {
     score = 0;
     tries = 3;
@@ -71,11 +93,13 @@ function initGame() {
     updateScoreDisplay()
 }
 
+// Subtract try
 function subtractTry() {
     tries--;
     updateTriesDisplay()
 }
 
+// Generate fruit
 function generateFruit() {
     fruitImg.classList.remove('sliced');
     // Generate random index to access a fruit from the array
@@ -97,6 +121,7 @@ function generateFruit() {
     }
 }
 
+// Set movement step
 function setStep() {
     // Set the step relative to the score to increase game difficulty
     if (score < 16){
@@ -110,11 +135,13 @@ function setStep() {
     }
 }
 
+// Move fruit vertically
 function moveFruitY() {
     fruitImg.style.top = `${fruitImg.offsetTop + step}px`;
     fruitImg.addEventListener('pointerleave', handleFruitSlice);
 }
 
+// Handle fruit pass the game board
 function handleFruitPass() {
     if (fruitImg.offsetTop > mainBoard.clientHeight) {
         subtractTry();
@@ -122,6 +149,7 @@ function handleFruitPass() {
     }
 }
 
+// Drop generated fruit vertically across the game board. Handle pass from board
 function dropFruit() {
     generateFruit();
     setStep();
@@ -138,6 +166,7 @@ function dropFruit() {
     }, fruitMovementRefreshTime)
 }
 
+// Game Over
 function gameOver() {
     playing = false;
     fruitImg.style.visibility = 'hidden';
@@ -146,6 +175,7 @@ function gameOver() {
     clearTimeout(delayedAppear)
 }
 
+// Game start after countdown
 function gameStartCountDown() {
     let count = 3;
     displayCountdownMessage(count);
@@ -162,6 +192,7 @@ function gameStartCountDown() {
     }, 1000)
 }
 
+// Handle game start or reset
 function handleStartOrReset() {
     initGame();
     if (playing) {
@@ -173,6 +204,7 @@ function handleStartOrReset() {
     }
 }
 
+// Handle stop
 function handleStop() {
     if (playing) {
         gameOver();
@@ -183,6 +215,7 @@ function handleStop() {
     }
 }
 
+// Handle fruit slice
 function handleFruitSlice() {
     clearInterval(coreInterval);
     clearTimeout(delayedAppear);
@@ -195,3 +228,5 @@ function handleFruitSlice() {
     }, 1000);
     fruitImg.removeEventListener('pointerleave', handleFruitSlice)
 }
+
+}())
