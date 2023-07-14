@@ -4,9 +4,18 @@ This is a lite Fruit Slice Game (similar to Fruit Ninja) developed with HTML, CS
 
 The app is intended to present a simple, yet intuitive, user interface and experience across desktop and mobile devices. For this, the latest CSS technologies are used in conjunction with the HTML code and the core functionality is handled by JavaScript.
 
-The JavaScript code is the core part that is responsible for the game logic. The aproach is driven towards Functional Programming and it's center on clean, readable code with good practices.
+The JavaScript code is the core part that is responsible for the game logic. The aproach is driven towards Functional Programming and it's center on clean, readable code with good practices. It's divided in four section for better readability: DOM Elements, Constants, Variables, Main and Functions.
 
-The JavaScript Code generates an array of hard coded fruits, sets global variables, stores the elements involved in the user interactivity, using class and attribute selectors, and performs the required actions with the following functions:
+The DOM Elements section stores the elements that will be manipulated to achieve the game's visual functionallity and interactivity.
+
+The Variables section contains the initialized variables in the highest scope so they can easily be accessed and modified inside different functions.
+
+The Constants section contains the fruits array set in the highest scope.
+
+The Main section sets the event listeners for the main controls, which are the Start and Stop button.
+
+The Functions section contains all the necessary functions for the game to work. These are:
+
 - `updateTriesDisplay`: Updates the display of the player’s remaining tries by showing or hiding heart icons.
 - `updateScoreDisplay`: Updates the display of the player’s score.
 - `hideMessage`: Hides the message displayed, on the game board, by the element or elements that are passed as arguments.
