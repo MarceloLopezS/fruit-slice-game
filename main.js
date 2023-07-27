@@ -30,14 +30,14 @@ let playing = false,
     score = 0,
     tries = 3,
     fruitMovementRefreshTime = 6,
-    countDown, coreInterval, delayedAppear, step;
+    countDown, fruitDropInterval, delayedAppearTimeout, step, sliceAnimationTimeout;
 
 
 /* MAIN */
 
 
 startButton.addEventListener('click', handleStartOrReset);
-stopButton.addEventListener('click', handleStop);
+stopButton.addEventListener('click', handleManualStop);
 
 
 /* FUNCTIONS  */
@@ -60,28 +60,39 @@ function updateScoreDisplay() {
 }
 
 // Hide messages
-function hideMessage(...messageElements) {
+function hideMessages(...messageElements) {
     messageElements.forEach(messageElement => {
         messageElement.style.visibility = 'hidden';
         messageElement.style.position = 'absolute'
     })
 }
 
+// Show messages
+function showMessages(...messageElements) {
+    messageElements.forEach(messageElement => {
+        messageElement.style.visibility = 'visible';
+        messageElement.style.position = 'unset'
+    })
+}
+
+// Make element visible
+function makeElementsVisible(...elements) {
+    elements.forEach(element => element.style.visibility = 'visible')
+}
+
 // Display Gameover message
 function displayGameOverMessage() {
-    hideMessage(startMessage, countDownMessage);
-    gameOverMessage.style.visibility = 'visible';
-    gameOverMessage.style.position = 'unset';
-    mainBoardMessage.style.visibility = 'visible';
+    hideMessages(startMessage, countDownMessage);
+    showMessages(gameOverMessage);
+    makeElementsVisible(mainBoardMessage);
     gameOverScore.textContent = `${score}`
 }
 
 // Display Countdown message
 function displayCountdownMessage(count) {
-    hideMessage(startMessage, gameOverMessage);
-    countDownMessage.style.visibility = 'visible';
-    countDownMessage.style.position = 'unset';
-    mainBoardMessage.style.visibility = 'visible';
+    hideMessages(startMessage, gameOverMessage);
+    showMessages(countDownMessage);
+    makeElementsVisible(mainBoardMessage);
     countDownMessage.textContent = `${count}`
 }
 
@@ -89,7 +100,7 @@ function displayCountdownMessage(count) {
 function initGame() {
     score = 0;
     tries = 3;
-    updateTriesDisplay()
+    updateTriesDisplay();
     updateScoreDisplay()
 }
 
@@ -99,26 +110,60 @@ function subtractTry() {
     updateTriesDisplay()
 }
 
+// Get random value from an array
+function getRandomArrayValue(array) {
+    const index = Math.floor(Math.random() * array.length);
+    return array[index];
+}
+
+// Set image source attribute
+function setImageSrc(imageElement, src) {
+    imageElement.setAttribute('src', src);
+}
+
+// Calculate longitude ratio
+function calculateLongitudeRatio(shortestLongitude, longestLongitude) {
+    return shortestLongitude / longestLongitude
+}
+
+// Apply transform: translate property to element
+function translateElementUsingTransform(element, coordinates = { x : null, y : null }) {
+    const { x, y } = coordinates;
+    element.style.transform = `translate(${x}px, ${y}px)`
+}
+
 // Generate fruit
 function generateFruit() {
-    fruitImg.classList.remove('sliced');
+    // Translate fruit to it's default position, above the main board
+    const coordinates = { x : 0, y : 0 };
+    translateElementUsingTransform(fruitImg, coordinates);
     // Generate random index to access a fruit from the array
-    const index = Math.floor(Math.random() * fruitsArray.length);
-    const fruitName = fruitsArray[index];
-    fruitImg.setAttribute('src', `./assets/img/${fruitName}.webp`);
-    fruitImg.style.visibility = 'visible';
-    // Position fruit above main board
-    fruitImg.style.top = `-${fruitImg.clientHeight}px`;
+    const fruitName = getRandomArrayValue(fruitsArray);
+    const imgSrc = `./assets/img/${fruitName}.webp`;
+    setImageSrc(fruitImg, imgSrc);
+    makeElementsVisible(fruitImg);
     // Calculate the Ratio of the fruit width, relative to the main board
-    const fruitWidthRatio = fruitImg.clientWidth / mainBoard.clientWidth;
-    // Calculate a random left coordinate to position the fruit, relative to the main board
-    let leftPosition = Math.floor(Math.random() * mainBoard.clientWidth);
+    const fruitWidth = fruitImg.clientWidth;
+    const mainBoardWidth = mainBoard.clientWidth;
+    const fruitWidthRatio = calculateLongitudeRatio(fruitWidth, mainBoardWidth);
+    // Calculate a random left offset to translate the fruit, relative to the main board
+    let leftOffset = Math.floor(Math.random() * mainBoardWidth);
     // Check if fruit would overflow with the generated coordinate. If it's the case, substract the fruit width from the coordinate to prevent it.
-    if (leftPosition > mainBoard.clientWidth * fruitWidthRatio) {
-        fruitImg.style.left = `${leftPosition - fruitImg.clientWidth}px`;
+    if (leftOffset > mainBoardWidth * fruitWidthRatio) {
+        const coordinates = {
+            x : leftOffset - fruitWidth,
+            y : 0
+        }
+        translateElementUsingTransform(fruitImg, coordinates)
     } else {
-        fruitImg.style.left = `${leftPosition}px`;
+        const coordinates = {
+            x : leftOffset,
+            y : 0
+        }
+        translateElementUsingTransform(fruitImg, coordinates)
     }
+    
+    fruitImg.addEventListener('pointerleave', handleFruitSlice);
 }
 
 // Set movement step
@@ -135,15 +180,42 @@ function setStep() {
     }
 }
 
-// Move fruit vertically
-function moveFruitY() {
-    fruitImg.style.top = `${fruitImg.offsetTop + step}px`;
-    fruitImg.addEventListener('pointerleave', handleFruitSlice);
+// Get translate X,Y coordinates
+function get2dTranslateCoordinates(element) {
+    const style = window.getComputedStyle(element);
+    const transformMatrix =  style['transform'];
+
+    if (transformMatrix === 'none' || typeof transformMatrix === 'undefined') {
+        return {
+            coordinateX: 0,
+            coordinateY: 0
+        }
+    }
+
+    // 2D Matrix usual representation: matrix(0, 0, 0, 0, 0, 0)
+    // When 2d translate and rotate are the only transforms applied to an element; the X, Y coordinates are the 5th and 6th values respectively
+    const matrixRegex = /matrix.*\((.+)\)/;
+    const transformMatrixValues = transformMatrix.match(matrixRegex)[1].split(', ');
+    return {
+        coordinateX: parseInt(transformMatrixValues[4]),
+        coordinateY: parseInt(transformMatrixValues[5])
+    }
 }
 
-// Handle fruit pass the game board
+// Move fruit vertically
+function moveFruitY() {
+    const { coordinateX, coordinateY } = get2dTranslateCoordinates(fruitImg);
+    const coordinates = {
+        x : coordinateX,
+        y : coordinateY + step
+    }
+    translateElementUsingTransform(fruitImg, coordinates);
+}
+
+// Handle when fruit passes the game board
 function handleFruitPass() {
-    if (fruitImg.offsetTop > mainBoard.clientHeight) {
+    const fruitCoordinateY = get2dTranslateCoordinates(fruitImg).coordinateY;
+    if (fruitCoordinateY > mainBoard.clientHeight + fruitImg.clientHeight) {
         subtractTry();
         generateFruit()
     }
@@ -153,9 +225,9 @@ function handleFruitPass() {
 function dropFruit() {
     generateFruit();
     setStep();
-    coreInterval = setInterval(() => {
+    fruitDropInterval = setInterval(() => {
         if (tries < 1) {
-            clearInterval(coreInterval);
+            clearInterval(fruitDropInterval);
             gameOver();
             displayGameOverMessage()
         } else {
@@ -170,9 +242,9 @@ function dropFruit() {
 function gameOver() {
     playing = false;
     fruitImg.style.visibility = 'hidden';
-    clearInterval(coreInterval);
+    clearInterval(fruitDropInterval);
     clearInterval(countDown);
-    clearTimeout(delayedAppear)
+    clearTimeout(delayedAppearTimeout)
 }
 
 // Game start after countdown
@@ -186,7 +258,7 @@ function gameStartCountDown() {
             clearInterval(countDown);
             playing = true;
             startButton.textContent = 'Reset';
-            hideMessage(countDownMessage);
+            hideMessages(countDownMessage);
             dropFruit()
         }
     }, 1000)
@@ -204,26 +276,46 @@ function handleStartOrReset() {
     }
 }
 
-// Handle stop
-function handleStop() {
+// Handle manual stop
+function handleManualStop() {
     if (playing) {
         gameOver();
         displayGameOverMessage();
-        startMessage.style.visibility = 'visible';
-        startMessage.style.position = 'unset';
+        showMessages(startMessage);
         startButton.textContent = 'Start'
     }
 }
 
+// Rotate element using transform
+function rotateElementUsingTransform(element, degrees) {
+    // To avoid transform: translate reset, the translate coordinates are required to be set
+    const { coordinateX, coordinateY } = get2dTranslateCoordinates(element);
+    element.style.transform = `translate(${coordinateX}px, ${coordinateY}px) rotate(${degrees}deg)`
+}
+
+// Perform slice animation on element
+function performSliceAnimation(element) {
+    clearTimeout(sliceAnimationTimeout);
+    rotateElementUsingTransform(element, 20);
+    sliceAnimationTimeout = setTimeout(() => {
+        rotateElementUsingTransform(element, 0);
+    }, 200)
+}
+
+// Perform slice audiovisual action on element
+function sliceActionOnElement(element, audio) {
+    audio.play();
+    performSliceAnimation(element);
+}
+
 // Handle fruit slice
 function handleFruitSlice() {
-    clearInterval(coreInterval);
-    clearTimeout(delayedAppear);
+    clearInterval(fruitDropInterval);
+    clearTimeout(delayedAppearTimeout);
     score++;
     updateScoreDisplay();
-    sliceAudio.play();
-    fruitImg.classList.add('sliced');
-    delayedAppear = setTimeout(() => {
+    sliceActionOnElement(fruitImg, sliceAudio);
+    delayedAppearTimeout = setTimeout(() => {
         dropFruit()
     }, 1000);
     fruitImg.removeEventListener('pointerleave', handleFruitSlice)
