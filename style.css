@@ -265,9 +265,11 @@ main {
 }
 
 .main-board__fruit {
+    --fruit-width: clamp(var(--size-350), 3.8vw, var(--size-450));
     visibility: hidden;
     position: absolute;
-    max-width: clamp(var(--size-350), 3.8vw, var(--size-450));
+    top: calc(-1.75 * var(--fruit-width));
+    width: var(--fruit-width);
 }
 
 .main-section .right-ui {
@@ -373,22 +375,4 @@ footer a:hover {
 
 .container {
     max-width: 120rem;
-}
-
-.sliced {
-    animation: slice 200ms linear;
-}
-
-/* ANIMATIONS */
-
-@keyframes slice {
-    0% {
-      transform: rotate(0deg);
-    }
-    50% {
-      transform: rotate(20deg);
-    }
-    100% {
-      transform: rotate(0deg);
-    }
 }
