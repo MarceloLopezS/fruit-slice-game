@@ -3,18 +3,18 @@
 /* DOM Elements */
 
 
-const body = document.querySelector('body');
-const scoreDisplay = body.querySelector('.left-ui__box span[data-score]');
-const mainBoard = body.querySelector('.main-board');
-const mainBoardMessage = mainBoard.querySelector('.main-board__message');
-const startMessage = mainBoardMessage.querySelector('p[data-message-start]');
-const gameOverMessage = mainBoardMessage.querySelector('div[data-message-over]');
-const gameOverScore = gameOverMessage.querySelector('span[data-score]');
-const countDownMessage = mainBoardMessage.querySelector('p[data-message-countdown]');
-const fruitImg = body.querySelector('.main-board__fruit');
-const sliceAudio = body.querySelector('audio[data-slice-sound]');
-const startButton = body.querySelector('.right-ui__button[data-start]');
-const stopButton = body.querySelector('.right-ui__button[data-stop]');
+const dom_body = document.querySelector('body');
+const dom_scoreDisplay = dom_body.querySelector('.left-ui__box span[data-score]');
+const dom_mainBoard = dom_body.querySelector('.main-board');
+const dom_mainBoardMessage = dom_mainBoard.querySelector('.main-board__message');
+const dom_startMessage = dom_mainBoardMessage.querySelector('p[data-message-start]');
+const dom_gameOverMessage = dom_mainBoardMessage.querySelector('div[data-message-over]');
+const dom_gameOverScore = dom_gameOverMessage.querySelector('span[data-score]');
+const dom_countDownMessage = dom_mainBoardMessage.querySelector('p[data-message-countdown]');
+const dom_fruitImg = dom_body.querySelector('.main-board__fruit');
+const dom_sliceAudio = dom_body.querySelector('audio[data-slice-sound]');
+const dom_startButton = dom_body.querySelector('.right-ui__button[data-start]');
+const dom_stopButton = dom_body.querySelector('.right-ui__button[data-stop]');
 
 
 /* CONSTANTS */
@@ -36,27 +36,43 @@ let playing = false,
 /* MAIN */
 
 
-startButton.addEventListener('click', handleStartOrReset);
-stopButton.addEventListener('click', handleManualStop);
+dom_startButton.addEventListener('click', handleStartOrReset);
+dom_stopButton.addEventListener('click', handleManualStop);
 
 
 /* FUNCTIONS  */
 
+
+// Make element hidden
+function makeElementsHidden(...elements) {
+    elements.forEach(element => element.style.visibility = 'hidden')
+}
+
+// Make element visible
+function makeElementsVisible(...elements) {
+    elements.forEach(element => element.style.visibility = 'visible')
+}
+
 // Update tries display
 function updateTriesDisplay() {
-    const hearts = body.querySelectorAll('.left-ui__heart');
+    const hearts = dom_body.querySelectorAll('.left-ui__heart');
     if (tries === 3) {
         hearts.forEach(heart => {
-            heart.style.visibility = 'visible';
+            makeElementsVisible(heart)
         })
     } else if (tries < 3) {
-        hearts[tries].style.visibility = 'hidden';
+        makeElementsHidden(hearts[tries])
     }
+}
+
+// Update an element's text content
+function updateElementText(element, text) {
+    element.textContent = `${text}`;
 }
 
 // Update Score display
 function updateScoreDisplay() {
-    scoreDisplay.textContent = `${score}`;
+    updateElementText(dom_scoreDisplay, score)
 }
 
 // Hide messages
@@ -75,25 +91,27 @@ function showMessages(...messageElements) {
     })
 }
 
-// Make element visible
-function makeElementsVisible(...elements) {
-    elements.forEach(element => element.style.visibility = 'visible')
+// Ensure message visibility by hidding it's siblings, showing it's parent and itself
+function ensureMessageVisibility(messageElement) {
+    const messageElementParent = messageElement.parentElement;
+    const messageElementSiblings = Array.from(messageElementParent.children).filter(element => {
+        return element === messageElement ? false : true
+    })
+    hideMessages(...messageElementSiblings);
+    showMessages(messageElement);
+    makeElementsVisible(messageElementParent)
 }
 
 // Display Gameover message
 function displayGameOverMessage() {
-    hideMessages(startMessage, countDownMessage);
-    showMessages(gameOverMessage);
-    makeElementsVisible(mainBoardMessage);
-    gameOverScore.textContent = `${score}`
+    updateElementText(dom_gameOverScore, score);
+    ensureMessageVisibility(dom_gameOverMessage)
 }
 
 // Display Countdown message
 function displayCountdownMessage(count) {
-    hideMessages(startMessage, gameOverMessage);
-    showMessages(countDownMessage);
-    makeElementsVisible(mainBoardMessage);
-    countDownMessage.textContent = `${count}`
+    ensureMessageVisibility(dom_countDownMessage);
+    updateElementText(dom_countDownMessage, count)
 }
 
 // Initialize game
@@ -136,15 +154,15 @@ function translateElementUsingTransform(element, coordinates = { x : null, y : n
 function generateFruit() {
     // Translate fruit to it's default position, above the main board
     const coordinates = { x : 0, y : 0 };
-    translateElementUsingTransform(fruitImg, coordinates);
+    translateElementUsingTransform(dom_fruitImg, coordinates);
     // Generate random index to access a fruit from the array
     const fruitName = getRandomArrayValue(fruitsArray);
     const imgSrc = `./assets/img/${fruitName}.webp`;
-    setImageSrc(fruitImg, imgSrc);
-    makeElementsVisible(fruitImg);
+    setImageSrc(dom_fruitImg, imgSrc);
+    makeElementsVisible(dom_fruitImg);
     // Calculate the Ratio of the fruit width, relative to the main board
-    const fruitWidth = fruitImg.clientWidth;
-    const mainBoardWidth = mainBoard.clientWidth;
+    const fruitWidth = dom_fruitImg.clientWidth;
+    const mainBoardWidth = dom_mainBoard.clientWidth;
     const fruitWidthRatio = calculateLongitudeRatio(fruitWidth, mainBoardWidth);
     // Calculate a random left offset to translate the fruit, relative to the main board
     let leftOffset = Math.floor(Math.random() * mainBoardWidth);
@@ -154,16 +172,16 @@ function generateFruit() {
             x : leftOffset - fruitWidth,
             y : 0
         }
-        translateElementUsingTransform(fruitImg, coordinates)
+        translateElementUsingTransform(dom_fruitImg, coordinates)
     } else {
         const coordinates = {
             x : leftOffset,
             y : 0
         }
-        translateElementUsingTransform(fruitImg, coordinates)
+        translateElementUsingTransform(dom_fruitImg, coordinates)
     }
     
-    fruitImg.addEventListener('pointerleave', handleFruitSlice);
+    dom_fruitImg.addEventListener('pointerleave', handleFruitSlice);
 }
 
 // Set movement step
@@ -204,18 +222,18 @@ function get2dTranslateCoordinates(element) {
 
 // Move fruit vertically
 function moveFruitY() {
-    const { coordinateX, coordinateY } = get2dTranslateCoordinates(fruitImg);
+    const { coordinateX, coordinateY } = get2dTranslateCoordinates(dom_fruitImg);
     const coordinates = {
         x : coordinateX,
         y : coordinateY + step
     }
-    translateElementUsingTransform(fruitImg, coordinates);
+    translateElementUsingTransform(dom_fruitImg, coordinates);
 }
 
 // Handle when fruit passes the game board
 function handleFruitPass() {
-    const fruitCoordinateY = get2dTranslateCoordinates(fruitImg).coordinateY;
-    if (fruitCoordinateY > mainBoard.clientHeight + fruitImg.clientHeight) {
+    const fruitCoordinateY = get2dTranslateCoordinates(dom_fruitImg).coordinateY;
+    if (fruitCoordinateY > dom_mainBoard.clientHeight + dom_fruitImg.clientHeight) {
         subtractTry();
         generateFruit()
     }
@@ -241,7 +259,7 @@ function dropFruit() {
 // Game Over
 function gameOver() {
     playing = false;
-    fruitImg.style.visibility = 'hidden';
+    makeElementsHidden(dom_fruitImg);
     clearInterval(fruitDropInterval);
     clearInterval(countDown);
     clearTimeout(delayedAppearTimeout)
@@ -257,8 +275,8 @@ function gameStartCountDown() {
         if (count < 1) {
             clearInterval(countDown);
             playing = true;
-            startButton.textContent = 'Reset';
-            hideMessages(countDownMessage);
+            updateElementText(dom_startButton, 'Reset');
+            hideMessages(dom_countDownMessage);
             dropFruit()
         }
     }, 1000)
@@ -271,7 +289,7 @@ function handleStartOrReset() {
         gameOver();
         gameStartCountDown()
     } else {
-        mainBoardMessage.style.visibility = 'hidden';
+        makeElementsHidden(dom_mainBoardMessage);
         gameStartCountDown()
     }
 }
@@ -281,14 +299,14 @@ function handleManualStop() {
     if (playing) {
         gameOver();
         displayGameOverMessage();
-        showMessages(startMessage);
-        startButton.textContent = 'Start'
+        showMessages(dom_startMessage);
+        updateElementText(dom_startButton, 'Start')
     }
 }
 
 // Rotate element using transform
 function rotateElementUsingTransform(element, degrees) {
-    // To avoid transform: translate reset, the translate coordinates are required to be set
+    // To avoid transform:translate reset, the translate coordinates are required to be set
     const { coordinateX, coordinateY } = get2dTranslateCoordinates(element);
     element.style.transform = `translate(${coordinateX}px, ${coordinateY}px) rotate(${degrees}deg)`
 }
@@ -314,11 +332,12 @@ function handleFruitSlice() {
     clearTimeout(delayedAppearTimeout);
     score++;
     updateScoreDisplay();
-    sliceActionOnElement(fruitImg, sliceAudio);
+    sliceActionOnElement(dom_fruitImg, dom_sliceAudio);
     delayedAppearTimeout = setTimeout(() => {
         dropFruit()
     }, 1000);
-    fruitImg.removeEventListener('pointerleave', handleFruitSlice)
+    
+    dom_fruitImg.removeEventListener('pointerleave', handleFruitSlice)
 }
 
 }())
